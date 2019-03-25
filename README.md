@@ -48,6 +48,12 @@ facts = HFC.facts_by_name("127.0.0.1")
 config = HFC.lookup(facts: facts)
 ```
 
+## Why not use ___ ?
+
+This gem is inspired by
+ - hiera https://github.com/puppetlabs/hiera
+ - tty-config https://github.com/piotrmurach/tty-config
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
