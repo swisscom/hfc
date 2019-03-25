@@ -1,0 +1,11 @@
+{
+  "my": {
+    "deep": {
+      "nested": {
+        "setting": {
+          "environment": "development"
+        }
+      }
+    }
+  }
+}

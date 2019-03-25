@@ -1,0 +1,5 @@
+my:
+  deep:
+    nested:
+      setting:
+        includes_top_level_domain: "it does"
