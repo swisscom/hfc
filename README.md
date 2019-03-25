@@ -1,4 +1,4 @@
-# HFC
+# (H)ierarchical(F)acts(C)onfig
 
 ## Installation
 
