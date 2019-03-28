@@ -45,13 +45,13 @@ module HFC_Base
 
   def set(*args, value:)
     last = args.pop
-    conf = ::ActiveSupport::HashWithIndifferentAccess.new
+    all_conf = conf = ::ActiveSupport::HashWithIndifferentAccess.new
     args.each do |arg|
       conf[arg] = ::ActiveSupport::HashWithIndifferentAccess.new unless conf[arg].is_a?(Hash)
       conf = conf[arg]
     end
     conf[last] = value
-    deep_merge(conf)
+    deep_merge(all_conf)
   end
 
   def fetch(*args, default: nil)
