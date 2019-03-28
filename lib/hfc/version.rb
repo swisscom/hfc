@@ -1,3 +1,3 @@
-module HFC
+class HFC
   VERSION = "0.1.0"
 end
