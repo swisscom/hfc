@@ -11,6 +11,7 @@ module HFC_Base
 
   attr_accessor :config
   attr_accessor :lookup_paths
+
   def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')])
     @config = ::ActiveSupport::HashWithIndifferentAccess.new 
   end
