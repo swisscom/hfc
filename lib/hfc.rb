@@ -13,16 +13,16 @@ module HFC_Base
   attr_accessor :lookup_paths
 
   def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')])
-    @config = ::ActiveSupport::HashWithIndifferentAccess.new 
+    @config = ::ActiveSupport::HashWithIndifferentAccess.new
   end
 
   def by_file(file)
     case File.extname file
-    when ".rb"
+    when '.rb'
       deep_merge(eval(IO.read(file), binding, file))
-    when ".yaml", ".yml"
-      deep_merge(::YAML.load(::File.read(file)))
-    when ".json"
+    when '.yaml', '.yml'
+      deep_merge(::YAML.safe_load(::File.read(file)))
+    when '.json'
       deep_merge(::JSON.parse(::File.read(file)))
     end
   end
@@ -35,7 +35,7 @@ module HFC_Base
     config.deep_merge!(hash)
   end
 
-  def set(*args, value: )
+  def set(*args, value:)
     last = args.shift
     conf = ::ActiveSupport::HashWithIndifferentAccess.new
     args.each do |arg|
@@ -51,6 +51,7 @@ module HFC_Base
     last = args.shift
     args.each do |arg|
       next unless conf[arg].is_a?(Haash)
+
       conf = conf[arg]
     end
     conf[last]
@@ -93,22 +94,22 @@ module HFC_Base
   def facts_by_name(name)
     name = name.downcase
     facts = { name: name }
-    config.fetch(:hfc, :facts, :by_name).each do |key, regex|
+    config.fetch(:hfc, :facts, :by_name).each do |_key, regex|
       if name[regex]
         facts.merge!(name.match(regex).named_captures.map { |k, v| [k.to_sym, v] }.to_h)
       end
     end
 
     config.fetch(:hfc, :facts, :join_facts).each do |key, keys|
-      facts[key] = keys.map {|a_key| facts[a_key]}.map(&:to_s).join("-")
+      facts[key] = keys.map { |a_key| facts[a_key] }.map(&:to_s).join('-')
     end
 
     config.fetch(:hfc, :facts, :by_facts).each do |when_fact, target_fact_values|
       target_fact_values.each do |target_fact, values|
-        if facts[when_fact] == target_fact
-          values.each do |key,value|
-            facts[key] = value
-          end
+        next unless facts[when_fact] == target_fact
+
+        values.each do |key, value|
+          facts[key] = value
         end
       end
     end

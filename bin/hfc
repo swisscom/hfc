@@ -7,12 +7,12 @@ require 'optparse'
 $FACTS = {}
 $HFC = HFC.new
 OptionParser.new do |opts|
-  opts.on('-v', '--verbose', 'Run verbosely') {$VERBOSE = true }
-  opts.on('-p path', '--path path', 'use the following base path(s) instead of defaults. Splitted by ,') { |base| $HFC = HFC.new(lookup_paths: base.split(","))}
+  opts.on('-v', '--verbose', 'Run verbosely') { $VERBOSE = true }
+  opts.on('-p path', '--path path', 'use the following base path(s) instead of defaults. Splitted by ,') { |base| $HFC = HFC.new(lookup_paths: base.split(',')) }
   opts.on('--fact domain=dev') { |fact| key, value = fact.split(/:|=/).map(&:strip); $FACTS ||= {}; $FACTS[key] = value }
   opts.on('--facts "{}"') { |facts| $FACTS ||= {}; $FACTS.merge!(eval(facts)) }
-  opts.on('-n name', '--name name','--facts-by-name name', 'lookup facts by name') { |name| $NAME = name }
-  opts.on('-l', '-c', '--lookup', '--config', 'lookup config | generate config') { $LOOKUP=true }
+  opts.on('-n name', '--name name', '--facts-by-name name', 'lookup facts by name') { |name| $NAME = name }
+  opts.on('-l', '-c', '--lookup', '--config', 'lookup config | generate config') { $LOOKUP = true }
 end.parse!
 
 puts $FACTS = $HFC.facts_by_name($NAME) if $NAME
