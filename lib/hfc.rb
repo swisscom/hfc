@@ -14,8 +14,9 @@ module HFC_Base
   attr_accessor :lookup_paths
 
   def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new)
-    @config = config
+    @config = ::ActiveSupport::HashWithIndifferentAccess.new(config)
     @lookup_paths = lookup_paths
+    lookup
   end
 
   def by_file(file)
@@ -30,7 +31,7 @@ module HFC_Base
   end
 
   def to_h
-    config.to_h
+    config
   end
 
   def deep_merge(hash)
@@ -43,7 +44,7 @@ module HFC_Base
   alias deep_dup clone
 
   def set(*args, value:)
-    last = args.shift
+    last = args.pop
     conf = ::ActiveSupport::HashWithIndifferentAccess.new
     args.each do |arg|
       conf[arg] = ::ActiveSupport::HashWithIndifferentAccess.new unless conf[arg].is_a?(Hash)
@@ -55,7 +56,7 @@ module HFC_Base
 
   def fetch(*args, default: nil)
     conf = config
-    last = args.shift
+    last = args.pop
     args.each do |arg|
       next unless conf[arg].is_a?(Hash)
 
@@ -77,7 +78,7 @@ module HFC_Base
         by_file(file)
       end
 
-      (fetch(:hfc, :facts, :hierarchy) || []).each do |key|
+      fetch(:hfc, :facts, :hierarchy, default: []).each do |key|
         key = key.to_s.downcase
         value = facts[key]
         next unless value
@@ -94,18 +95,18 @@ module HFC_Base
 
   def facts_by_name(name)
     name = name.downcase
-    facts = { name: name }
-    (fetch(:hfc, :facts, :by_name) || {}).each do |_key, regex|
+    facts = ::ActiveSupport::HashWithIndifferentAccess.new(name: name)
+    fetch(:hfc, :facts, :by_name, default: {}).each do |_key, regex|
       if name[regex]
         facts.merge!(name.match(regex).named_captures.map { |k, v| [k.to_sym, v] }.to_h)
       end
     end
 
-    (fetch(:hfc, :facts, :join_facts) || {}).each do |key, keys|
+    fetch(:hfc, :facts, :join_facts, default: {}).each do |key, keys|
       facts[key] = keys.map { |a_key| facts[a_key] }.map(&:to_s).join('-')
     end
 
-    (fetch(:hfc, :facts, :by_facts) || {}).each do |when_fact, target_fact_values|
+    fetch(:hfc, :facts, :by_facts, default: {}).each do |when_fact, target_fact_values|
       target_fact_values.each do |target_fact, values|
         next unless facts[when_fact] == target_fact
 
