@@ -3,6 +3,7 @@
 require 'hfc/version'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/deep_merge'
+require 'active_support/core_ext/object/deep_dup'
 require 'yaml'
 require 'json'
 
@@ -12,8 +13,8 @@ module HFC_Base
   attr_accessor :config
   attr_accessor :lookup_paths
 
-  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')])
-    @config = ::ActiveSupport::HashWithIndifferentAccess.new
+  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new)
+    @config = config
   end
 
   def by_file(file)
@@ -34,6 +35,11 @@ module HFC_Base
   def deep_merge(hash)
     config.deep_merge!(hash)
   end
+
+  def deep_dup
+    self.class.new(lookup_paths: lookup_paths, config: config.deep_dup)
+  end
+  alias deep_dup clone
 
   def set(*args, value:)
     last = args.shift

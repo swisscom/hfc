@@ -12,4 +12,5 @@ RSpec.describe HFC do
   it { expect(hfc.deep_merge(this: { is: true })).to have_key(:this) }
   it { expect(hfc.set(:this, :is, value: true)).to have_key(:this) }
   it { expect(hfc.fetch(:asdf)).to eq(nil) }
+  it { expect(hfc.clone.object_id).not_to eq(hfc.object_id) }
 end
