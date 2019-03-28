@@ -28,20 +28,27 @@ module HFC
       end
     end
 
-    def config
-      @config
-    end
-
     def to_h
-      @config.to_h
+      config.to_h
     end
 
     def deep_merge(hash)
-      @config.deep_merge!(hash)
+      config.deep_merge!(hash)
+    end
+
+    def set(*args, value: )
+      last = args.shift
+      conf = config
+      args.each do |arg|
+        conf[arg] = ::ActiveSupport::HashWithIndifferentAccess.new unless conf[arg].is_a?(Hash)
+        conf = conf[arg]
+      end
+      conf[last] = value
+      config
     end
 
     def fetch(*args)
-      conf = @config
+      conf = config
       args.each do |arg|
         conf.is_a?(Hash) && conf.has_key?(arg) ? conf = conf[arg] : conf
       end
