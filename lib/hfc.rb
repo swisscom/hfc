@@ -61,6 +61,7 @@ module HFC_Base
 
       conf = conf[arg]
     end
+    return default unless conf.is_a?(Hash)
     conf[last] || default
   end
 

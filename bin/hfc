@@ -16,4 +16,4 @@ OptionParser.new do |opts|
 end.parse!
 
 puts $FACTS = $HFC.facts_by_name($NAME) if $NAME
-puts $HFC.lookup(facts: $FACTS).config.to_s if $LOOKUP
+puts $HFC.lookup(facts: $FACTS).to_s if $LOOKUP
