@@ -53,7 +53,7 @@ module HFC_Base
     deep_merge(conf)
   end
 
-  def fetch(*args)
+  def fetch(*args, default: nil)
     conf = config
     last = args.shift
     args.each do |arg|
@@ -61,7 +61,7 @@ module HFC_Base
 
       conf = conf[arg]
     end
-    conf[last]
+    conf[last] || default
   end
 
 
