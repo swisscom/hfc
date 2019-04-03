@@ -13,8 +13,7 @@ module HFC_Base
   attr_accessor :config
   attr_accessor :lookup_paths
 
-  DEFAULT_LOOKUP_PATHS = ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')]
-  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : DEFAULT_LOOKUP_PATHS, config: ::ActiveSupport::HashWithIndifferentAccess.new, auto_lookup: true)
+  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new, auto_lookup: true)
     @config = ::ActiveSupport::HashWithIndifferentAccess.new(config)
     @lookup_paths = lookup_paths
     lookup if auto_lookup
