@@ -18,5 +18,6 @@ RSpec.describe HFC do
     hfc.deep_merge(this: { is: true })
     expect(hfc.fetch(:this)).to eq({"is" => true})
     expect(hfc.fetch(:this, :is)).to eq(true)
+    expect(hfc[:this, :is]).to eq(true)
   end
 end

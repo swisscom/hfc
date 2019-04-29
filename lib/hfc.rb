@@ -65,7 +65,7 @@ module HFC_Base
     return default unless conf.is_a?(Hash)
     conf[last] || default
   end
-
+  alias [] fetch
 
   def lookup(facts: ::ActiveSupport::HashWithIndifferentAccess.new)
     facts = ::ActiveSupport::HashWithIndifferentAccess.new facts
