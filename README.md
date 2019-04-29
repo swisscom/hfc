@@ -175,9 +175,38 @@ facts = HFC.facts_by_name("gitlab.com")
 config = HFC.lookup(facts)
 ```
 
+### HFC#fetch
+
 ```ruby
 facts = HFC.facts_by_name("127.0.0.1")
 config = HFC.lookup(facts: facts)
+config.fetch()
+# => {my: {nested: {setting: true}}}
+config.fetch(:my)
+# => {nested: {setting: true}}
+config.fetch(:my, "nested")
+# => {setting: true}
+config.fetch(:my, :nested, :setting)
+# => true
+```
+### HFC#fetch uses internally HashWithIndifferentAccess
+
+```ruby
+config.fetch(:my, "nested")
+# => {setting: true}
+```
+```ruby
+config.fetch(:my, :nested)
+# => {setting: true}
+```
+
+### HFC#[]
+
+hfc#`[]` is an alias of hfc#`fetch`
+
+```ruby
+config[:my, :nested]
+# => {setting: true}
 ```
 
 
