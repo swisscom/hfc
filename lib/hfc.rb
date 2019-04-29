@@ -63,6 +63,7 @@ module HFC_Base
       conf = conf[arg]
     end
     return default unless conf.is_a?(Hash)
+
     conf[last] || default
   end
   alias [] fetch
@@ -117,7 +118,6 @@ module HFC_Base
     end
     facts
   end
-
 end
 
 class HFC
