@@ -35,7 +35,8 @@ module HFC_Base
   end
 
   def deep_merge(hash)
-    config.deep_merge!(hash)
+    self.config = config.deep_merge(hash)
+    config
   end
 
   def deep_dup
