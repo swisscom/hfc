@@ -75,8 +75,8 @@ module HFC_Base
   end
   alias [] fetch
 
-  def lookup(facts: facts)
-    lookup_facts = ::ActiveSupport::HashWithIndifferentAccess.new facts || {}
+  def lookup(facts: nil)
+    lookup_facts = ::ActiveSupport::HashWithIndifferentAccess.new facts || self.facts || {}
     lookup_facts = lookup_facts.each_with_object(::ActiveSupport::HashWithIndifferentAccess.new) { |(key, value), hash| hash[key.to_s.downcase] = value.to_s.downcase }
     warn "-> #{lookup_facts.inspect}" if $DEBUG
     lookup_paths.each do |base|
