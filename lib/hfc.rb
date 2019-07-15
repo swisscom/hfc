@@ -10,11 +10,12 @@ require 'json'
 module HFC_Base
   class Error < StandardError; end
 
-  attr_accessor :config
+  attr_accessor :config, :facts
   attr_accessor :lookup_paths
 
-  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new, auto_lookup: true)
-    @config = ::ActiveSupport::HashWithIndifferentAccess.new(config)
+  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new, auto_lookup: true, facts: ActiveSupport::HashWithIndifferentAccess.new)
+    self.config = ::ActiveSupport::HashWithIndifferentAccess.new(config)
+    self.facts = ActiveSupport::HashWithIndifferentAccess.new(facts)
     @lookup_paths = lookup_paths
     lookup if auto_lookup
   end
@@ -40,7 +41,7 @@ module HFC_Base
   end
 
   def deep_dup
-    self.class.new(lookup_paths: lookup_paths, config: config.deep_dup)
+    self.class.new(lookup_paths: lookup_paths, config: config.deep_dup, facts: facts.clone)
   end
   alias deep_dup clone
 
@@ -69,10 +70,10 @@ module HFC_Base
   end
   alias [] fetch
 
-  def lookup(facts: ::ActiveSupport::HashWithIndifferentAccess.new)
-    facts = ::ActiveSupport::HashWithIndifferentAccess.new facts
-    facts = facts.each_with_object(::ActiveSupport::HashWithIndifferentAccess.new) { |(key, value), hash| hash[key.to_s.downcase] = value.to_s.downcase }
-    STDERR.puts "-> #{facts.inspect}" if $VERBOSE
+  def lookup(facts: nil)
+    lookup_facts = ::ActiveSupport::HashWithIndifferentAccess.new facts || Hash.new
+    lookup_facts = lookup_facts.each_with_object(::ActiveSupport::HashWithIndifferentAccess.new) { |(key, value), hash| hash[key.to_s.downcase] = value.to_s.downcase }
+    STDERR.puts "-> #{lookup_facts.inspect}" if $VERBOSE
     lookup_paths.each do |base|
       STDERR.puts "-> #{base}" if $VERBOSE
       Dir.glob(File.join(base, 'common.*')).sort.each do |file|
@@ -82,7 +83,7 @@ module HFC_Base
 
       fetch(:hfc, :facts, :hierarchy, default: []).each do |key|
         key = key.to_s.downcase
-        value = facts[key]
+        value = lookup_facts[key]
         next unless value
 
         STDERR.puts "---> #{File.join(base, key, value + '.*')}" if $VERBOSE
@@ -97,27 +98,31 @@ module HFC_Base
 
   def facts_by_name(name)
     name = name.downcase
-    facts = ::ActiveSupport::HashWithIndifferentAccess.new(name: name)
-    fetch(:hfc, :facts, :by_name, default: {}).each do |_key, regex|
+    name_facts = ::ActiveSupport::HashWithIndifferentAccess.new(name: name)
+    fetch(:hfc, :facts, :by_name, default: Hash.new).each do |_key, regex|
       if name[regex]
-        facts.merge!(name.match(regex).named_captures.map { |k, v| [k.to_sym, v] }.to_h)
+        name_facts.merge!(name.match(regex).named_captures.map { |k, v| [k.to_sym, v] }.to_h)
       end
     end
 
-    fetch(:hfc, :facts, :join_facts, default: {}).each do |key, keys|
-      facts[key] = keys.map { |a_key| facts[a_key] }.map(&:to_s).join('-')
+    fetch(:hfc, :facts, :join_facts, default: Hash.new).each do |key, keys|
+      name_facts[key] = keys.map { |a_key| name_facts[a_key] }.map(&:to_s).join('-')
     end
 
-    fetch(:hfc, :facts, :by_facts, default: {}).each do |when_fact, target_fact_values|
+    fetch(:hfc, :facts, :by_facts, default: Hash.new).each do |when_fact, target_fact_values|
       target_fact_values.each do |target_fact, values|
-        next unless facts[when_fact] == target_fact
+        next unless name_facts[when_fact] == target_fact
 
         values.each do |key, value|
-          facts[key] = value
+          name_facts[key] = value
         end
       end
     end
-    facts
+    name_facts
+  end
+
+  def set_facts_by_name(name)
+    self.facts = facts_by_name(name)
   end
 end
 
