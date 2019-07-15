@@ -13,7 +13,12 @@ module HFC_Base
   attr_accessor :config, :facts
   attr_accessor :lookup_paths
 
-  def initialize(lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')], config: ::ActiveSupport::HashWithIndifferentAccess.new, auto_lookup: true, facts: ActiveSupport::HashWithIndifferentAccess.new)
+  def initialize(
+      lookup_paths: ENV['HFC'] ? ENV['HFC'].split(',') : ['/opt/hfc', File.join(ENV['HOME'].to_s, '.config', 'hfc')],
+      config: ::ActiveSupport::HashWithIndifferentAccess.new,
+      facts: ActiveSupport::HashWithIndifferentAccess.new
+      auto_lookup: true,
+    )
     self.config = ::ActiveSupport::HashWithIndifferentAccess.new(config)
     self.facts = ActiveSupport::HashWithIndifferentAccess.new(facts)
     @lookup_paths = lookup_paths
