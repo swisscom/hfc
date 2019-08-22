@@ -90,6 +90,7 @@ Facts: {domain: "com"}
 |- {}
 |- merge: common.(yaml|rb|*)
 |- merge: domain/com.(yaml|rb|*) 
+|- merge: domain/com/*.(yaml|rb|*) 
 |- {...}
 ```
 
@@ -99,7 +100,9 @@ Facts: {hostname: "localhost", domain: "com"}
 |- {}
 |- merge: common.(yaml|rb|*)
 |- merge: domain/com.(yaml|rb|*)
-|- merge: hostname/localhost(yaml|rb|*) 
+|- merge: domain/com/*.(yaml|rb|*)
+|- merge: hostname/localhost.(yaml|rb|*) 
+|- merge: hostname/localhost/*(yaml|rb|*) 
 |- {...}
 ```
 
@@ -107,9 +110,9 @@ You can build up this hierarchy of facts with as many facts as you wish.
 
 ### Facts Hierachy
 
-The lookup order of facts itself is defined on common.yaml, but can be also set anywhere else.
+The lookup order of facts itself can defined in hfc.yaml, but can be also set anywhere else.
 
-See `config/common.yaml` for example.
+See `config/hfc.yaml` for example.
 
 ```yaml
 ---

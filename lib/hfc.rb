@@ -81,7 +81,8 @@ module HFC_Base
     warn "-> #{lookup_facts.inspect}" if $DEBUG
     lookup_paths.each do |base|
       warn "-> #{base}" if $DEBUG
-      Dir.glob(File.join(base, 'common.*')).sort.each do |file|
+
+      Dir.glob(File.join(base, '*.*')).sort.each do |file|
         warn "--> #{file}" if $DEBUG
         by_file(file)
       end
@@ -93,6 +94,12 @@ module HFC_Base
 
         warn "---> #{File.join(base, key, value + '.*')}" if $DEBUG
         Dir.glob(File.join(base, key, value + '.*')).sort.each do |file|
+          warn "---> #{file}" if $DEBUG
+          by_file(file)
+        end
+
+        warn "---> #{File.join(base, key, value, '*.*')}" if $DEBUG
+        Dir.glob(File.join(base, key, value, '*.*')).sort.each do |file|
           warn "---> #{file}" if $DEBUG
           by_file(file)
         end

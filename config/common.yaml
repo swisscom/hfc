@@ -1,20 +1,4 @@
 ---
-hfc:
-  hierarchy:
-    - :domain
-    - :hostname
-    - :fqdn
-  by_name:
-    hostname:  !ruby/regexp '/(?<fqdn>(?<hostname>[a-z0-9]+)\.?(?<domain>.*))/i'
-  join_facts:
-    reverse-hostname:
-      - :domain
-      - :hostname
-  by_facts:
-    fqdn:
-      "127.0.0.1":
-        hostname: "localhost"
-
 my:
   deep:
     nested:
